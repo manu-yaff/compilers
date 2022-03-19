@@ -23,6 +23,7 @@ Author: Manuel Yafté
 
 # read input filename
 print('Ingresa el nombre del archivo que contiene el input:')
+print("['input1.txt', 'input2.txt', 'input3.txt', 'input4.txt', 'input5.txt']")
 file = input()
 input_file = open('test_cases/' + file, 'r')
 lines = input_file.readlines()
