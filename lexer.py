@@ -73,21 +73,21 @@ def read_rules(lines):
 
 # generate FIRST Set
 def generate_first_set(non_terminal, productions, terminals, counter, first):
-  print(non_terminal, counter)
-  if (counter > 7):
-    print(first)
+  # print(len(productions))
+  if (counter > len(productions)-1):
+    # print(first)
     return first
   
   if (productions[counter]['left_side'] == non_terminal):
     # aqui abajo esta el problema
     if (productions[counter]['right_side'][0] in terminals):
-      print('es un terminal')
+      # print('es un terminal')
       first.append(productions[counter]['right_side'][0])
-      generate_first_set(non_terminal, productions, terminals, counter + 1, first)
+      return generate_first_set(non_terminal, productions, terminals, counter + 1, first)
     else:
-      generate_first_set(productions[counter]['right_side'][0], productions, terminals, counter + 1, first)
+      return generate_first_set(productions[counter]['right_side'][0], productions, terminals, counter + 1, first)
   else:
-    generate_first_set(non_terminal, productions, terminals, counter + 1, first)
+    return generate_first_set(non_terminal, productions, terminals, counter + 1, first)
   
   # if (productions[counter]['left_side'] == symbol):
   #   if (productions[counter]['left_side'] in terminals):
@@ -122,7 +122,11 @@ print(terminals)
 print(rules)
 
 
-generate_first_set(rules[6]['left_side'], rules, terminals, 0, [])
+# generate_first_set(rules[6]['left_side'], rules, terminals, 0, [])
+
+for non_terminal in non_terminals:
+  print(generate_first_set(non_terminal, rules, terminals, 0, []))
+
 
 
 # print('Non terminals: ', non_terminals)
