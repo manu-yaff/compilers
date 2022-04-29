@@ -76,7 +76,7 @@ def generate_first_set(non_terminal, productions, terminals, counter, first):
   # print(len(productions))
   if (counter > len(productions)-1):
     # print(first)
-    return first
+    return set(first)
   
   if (productions[counter]['left_side'] == non_terminal):
     # aqui abajo esta el problema
@@ -118,14 +118,14 @@ lines = read_file()
 rules = read_rules(lines)
 non_terminals = read_non_terminals(lines)
 terminals = read_terminals(lines, non_terminals)
-print(terminals)
-print(rules)
+# print(terminals)
+# # print(rules)
 
 
 # generate_first_set(rules[6]['left_side'], rules, terminals, 0, [])
 
 for non_terminal in non_terminals:
-  print(generate_first_set(non_terminal, rules, terminals, 0, []))
+  print(non_terminal, generate_first_set(non_terminal, rules, terminals, 0, []))
 
 
 
