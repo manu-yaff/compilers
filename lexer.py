@@ -95,7 +95,7 @@ def generate_first_set(non_terminal, productions, terminals, counter, first):
 
 def generate_follow_set(non_terminal, productions, counter, follow):
   if (counter > (len(productions)-1)):
-    print('follow:', set(follow))
+    # print('follow:', set(follow))
     return set(follow)
   
   right_side = productions[counter]['right_side']
@@ -103,7 +103,6 @@ def generate_follow_set(non_terminal, productions, counter, follow):
   if (productions[0]['left_side'] == non_terminal):
     follow.append('$')
   for index, symbol in enumerate(right_side):
-    # print(symbol)
     if (symbol == non_terminal):
       # check it has something in front
       if (index == right_side_size - 1 and non_terminal != productions[counter]['left_side']):
@@ -128,7 +127,7 @@ def generate_follow_set(non_terminal, productions, counter, follow):
             generate_follow_set(productions[counter]['left_side'], productions, 0, follow)
     # else:
       # return generate_follow_set(non_terminal, productions, counter + 1, follow)
-  generate_follow_set(non_terminal, productions, counter + 1, follow)
+  return generate_follow_set(non_terminal, productions, counter + 1, follow)
         
 
   # for index_production, production in enumerate(productions):
@@ -169,15 +168,11 @@ lines = read_file()
 rules = read_rules(lines)
 non_terminals = read_non_terminals(lines)
 terminals = read_terminals(lines, non_terminals)
-# print(terminals)
-# # print(rules)
 
-
-# generate_first_set(rules[6]['left_side'], rules, terminals, 0, [])
-
-# for non_terminal in non_terminals:
-  # print(non_terminal, generate_first_set(non_terminal, rules, terminals, 0, []))
-  # generate_follow_set(non_terminal, rules, [], [])
+for non_terminal in non_terminals:
+  print('FIRST:', non_terminal, generate_first_set(non_terminal, rules, terminals, 0, []))
+  print('FOLLOW', non_terminal , generate_follow_set(non_terminal, rules, 0, []))
+  print("\n")
 
 
 # print('\nFOLLOW: ')
@@ -202,6 +197,6 @@ terminals = read_terminals(lines, non_terminals)
 # print(generate_follow_set('bterm', rules, 0, []))
 # print(generate_follow_set('bfactor', rules, 0, []))
 
-print(generate_follow_set('S', rules, 0, []))
-print(generate_follow_set('A', rules, 0, []))
-print(generate_follow_set('APrime', rules, 0, []))
+# print(generate_follow_set('S', rules, 0, []))
+# print(generate_follow_set('A', rules, 0, []))
+# print(generate_follow_set('APrime', rules, 0, []))
