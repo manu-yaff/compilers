@@ -22,6 +22,9 @@ Author: Manuel Yafté
 """
 
 # function to print menu
+from turtle import right
+
+
 def print_menu():
   print('Ingresa el nombre del archivo que contiene el input:')
   print("['input1.txt', 'input2.txt', 'input3.txt', 'input4.txt', 'input5.txt']")
@@ -79,7 +82,6 @@ def generate_first_set(non_terminal, productions, terminals, counter, first):
     return set(first)
   
   if (productions[counter]['left_side'] == non_terminal):
-    # aqui abajo esta el problema
     if (productions[counter]['right_side'][0] in terminals):
       # print('es un terminal')
       first.append(productions[counter]['right_side'][0])
@@ -89,28 +91,77 @@ def generate_first_set(non_terminal, productions, terminals, counter, first):
   else:
     return generate_first_set(non_terminal, productions, terminals, counter + 1, first)
   
-  # if (productions[counter]['left_side'] == symbol):
-  #   if (productions[counter]['left_side'] in terminals):
-  #     print(symbol)
-  #   else:
-  #     print('llamada con, ', productions[counter]['right_side'][0], counter + 1)
-  # else:
-  #   print('llamada con, ', symbol, productions, terminals, counter + 1)
 
 
-
-
-
-  # first = []
-  # symbol = rule["right_side"][0]
-  # if (symbol in terminals and ):
-  #   first.append(symbol)
-  # else:
-  #   generate_first_set(productions[i + 1], productions, terminals)
-
-  # print(first)
+def generate_follow_set(non_terminal, productions, counter, follow):
+  if (counter > (len(productions)-1)):
+    print('follow:', set(follow))
+    return set(follow)
   
+  right_side = productions[counter]['right_side']
+  right_side_size = len(right_side)
+  if (productions[0]['left_side'] == non_terminal):
+    follow.append('$')
+  for index, symbol in enumerate(right_side):
+    # print(symbol)
+    if (symbol == non_terminal):
+      # check it has something in front
+      if (index == right_side_size - 1 and non_terminal != productions[counter]['left_side']):
+        # print('no tiene algo enfrente', non_terminal)
+        # print(productions[counter]['left_side'])
+        generate_follow_set(productions[counter]['left_side'], productions, 0, follow)
+      elif ((index < right_side_size - 1)):
+        if (right_side[index + 1] in terminals):
+          # print('terminal al frente', right_side[index+1])
+          follow.append(right_side[index+1])
+        else:
+          # print('tiene el siguiente no terminal', right_side[index+1])
+          result = generate_first_set(right_side[index+1], productions, terminals, 0, [])
+          # print('this is result: ',result)
+          follow.extend(result)
+          if ('epsilon' in result):
+           follow.remove('epsilon')
+      #   # print('tiene un epsilon')
+      #   # elimnar el que esta a la derecha
+      #   # llamar el follow del que esta a index + 1
+          if (index + 2 > right_side_size - 1):
+            generate_follow_set(productions[counter]['left_side'], productions, 0, follow)
+    # else:
+      # return generate_follow_set(non_terminal, productions, counter + 1, follow)
+  generate_follow_set(non_terminal, productions, counter + 1, follow)
+        
 
+  # for index_production, production in enumerate(productions):
+  #   right_side = production['right_side']
+  #   right_side_size = len(right_side)
+  #   if (index_production == 0):
+  #     follow.append('$')
+  #   for index, symbol in enumerate(right_side):
+  #     # print(symbol)
+  #     if (symbol == non_terminal):
+  #       # print('this is index: ', index, symbol)
+  #       # check it has something in front
+  #       if (index == right_side_size - 1 and non_terminal != production['left_side']):
+  #         # print('no tiene nada en frente', non_terminal)
+  #         generate_follow_set(production['left_side'], productions, follow, first)
+
+  #       # check if the one in front is terminal
+  #       elif (index < right_side_size and (right_side[index + 1] in terminals)):
+  #         # print('tiene un terminal en frente', right_side[index+1])
+  #         follow.append(right_side[index+1])
+  #       else:
+  #         # print('tiene un no terminal')
+  #         result =  generate_first_set(right_side[index+1], productions, terminals, index + 1, first)
+  #         follow.extend(result)
+  #         if ('epsilon' in result):
+  #           follow.remove('epsilon')
+  #           # print('tiene un epsilon')
+  #           # elimnar el que esta a la derecha
+  #           # llamar el follow del que esta a index + 1
+  #           if (index + 2 > right_side_size - 1):
+  #             return generate_follow_set(production['left_side'], productions, follow, first)
+
+  # return set(follow)
 
 
 print_menu()
@@ -124,12 +175,33 @@ terminals = read_terminals(lines, non_terminals)
 
 # generate_first_set(rules[6]['left_side'], rules, terminals, 0, [])
 
-for non_terminal in non_terminals:
-  print(non_terminal, generate_first_set(non_terminal, rules, terminals, 0, []))
+# for non_terminal in non_terminals:
+  # print(non_terminal, generate_first_set(non_terminal, rules, terminals, 0, []))
+  # generate_follow_set(non_terminal, rules, [], [])
 
 
+# print('\nFOLLOW: ')
 
-# print('Non terminals: ', non_terminals)
-# print('Terminals: ', terminals)
+# print(generate_follow_set('E', rules, 0, []))
+# print(generate_follow_set('EPrime', rules, 0, []))
+# print(generate_follow_set('T', rules, 0, []))
+# print(generate_follow_set('TPrime', rules, 0, []))
+# print(generate_follow_set('F', rules, 0, []))
 
-# generate_first_set(grammar_rules, terminals, non_terminals)
+# print(generate_follow_set('E', rules, 0, []))
+# print(generate_follow_set('T', rules, 0, []))
+# print(generate_follow_set('F', rules, 0, []))
+
+
+# print(generate_follow_set('A', rules, 0, []))
+# print(generate_follow_set('B', rules, 0, []))
+# print(generate_follow_set('C', rules, 0, []))
+# print(generate_follow_set('D', rules, 0, []))
+
+# print(generate_follow_set('bexpr', rules, 0, []))
+# print(generate_follow_set('bterm', rules, 0, []))
+# print(generate_follow_set('bfactor', rules, 0, []))
+
+print(generate_follow_set('S', rules, 0, []))
+print(generate_follow_set('A', rules, 0, []))
+print(generate_follow_set('APrime', rules, 0, []))
