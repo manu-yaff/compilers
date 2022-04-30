@@ -22,7 +22,7 @@ Author: Manuel Yafté
 """
 
 # function to print menu
-from turtle import right
+from turtle import left, right
 
 
 def print_menu():
@@ -92,7 +92,7 @@ def generate_first_set(non_terminal, productions, terminals, counter, first):
     return generate_first_set(non_terminal, productions, terminals, counter + 1, first)
   
 
-
+# generate FOLLOW Set
 def generate_follow_set(non_terminal, productions, counter, follow):
   if (counter > (len(productions)-1)):
     # print('follow:', set(follow))
@@ -130,37 +130,74 @@ def generate_follow_set(non_terminal, productions, counter, follow):
   return generate_follow_set(non_terminal, productions, counter + 1, follow)
         
 
-  # for index_production, production in enumerate(productions):
-  #   right_side = production['right_side']
-  #   right_side_size = len(right_side)
-  #   if (index_production == 0):
-  #     follow.append('$')
-  #   for index, symbol in enumerate(right_side):
-  #     # print(symbol)
-  #     if (symbol == non_terminal):
-  #       # print('this is index: ', index, symbol)
-  #       # check it has something in front
-  #       if (index == right_side_size - 1 and non_terminal != production['left_side']):
-  #         # print('no tiene nada en frente', non_terminal)
-  #         generate_follow_set(production['left_side'], productions, follow, first)
+# get terminals that have more than 1 production
+def filter_non_terminals(non_terminals, productions):
+  filtered = []
+  counter = 0
+  for non_terminal in non_terminals:
+    for production in productions:
+      left_side = production['left_side']
+      right_side = production['right_side']
+      if (left_side == non_terminal):
+        counter += 1
+        if (counter > 1):
+          filtered.append(non_terminal)
+    counter = 0
+  return set(filtered) 
 
-  #       # check if the one in front is terminal
-  #       elif (index < right_side_size and (right_side[index + 1] in terminals)):
-  #         # print('tiene un terminal en frente', right_side[index+1])
-  #         follow.append(right_side[index+1])
-  #       else:
-  #         # print('tiene un no terminal')
-  #         result =  generate_first_set(right_side[index+1], productions, terminals, index + 1, first)
-  #         follow.extend(result)
-  #         if ('epsilon' in result):
-  #           follow.remove('epsilon')
-  #           # print('tiene un epsilon')
-  #           # elimnar el que esta a la derecha
-  #           # llamar el follow del que esta a index + 1
-  #           if (index + 2 > right_side_size - 1):
-  #             return generate_follow_set(production['left_side'], productions, follow, first)
 
-  # return set(follow)
+# check if productions start width different symbol 
+def check_start_diff_symbol(non_terminal, productions, terminals):
+  visited = set()
+  counter = 0
+  for index, production in enumerate(productions):
+    left_side = production['left_side']
+    right_side = production['right_side']
+    if (left_side == non_terminal):
+      counter += 1
+      if (right_side[0] in visited):
+        return False
+      visited.add(right_side[0])
+  
+    if (right_side[0] == left_side):
+      return False
+    if(index == 0 and right_side[0] == productions[index + 2]['left_side']):
+     return False 
+  return True
+
+# check each rule has at most one epsilon
+def check_at_most_one_epislon(non_terminal, productions):
+  counter = 0
+  for production in productions:
+    left_side = production['left_side']
+    right_side = production['right_side']
+    if (left_side == non_terminal):
+      if(right_side[0] == 'epsilon'):
+        counter += 1
+  return counter <= 1
+
+# check that intersection of FIRST and FOLLOW set is null
+def check_sets_intersection_is_null(non_terminal, productions, terminals):
+  first = generate_first_set(non_terminal, productions, terminals, 0, [])
+  follow = generate_follow_set(non_terminal, productions, 0, [])
+  for element in first:
+    if (element in follow):
+      return False
+  return True
+
+# check if three rules are met
+def check_ll1(productions, non_terminals, terminals):
+  for non_terminal in non_terminals:
+    if(not check_start_diff_symbol(non_terminal, productions, terminals)):
+      return False
+    
+    if(not check_at_most_one_epislon(non_terminal, productions)):
+      return False
+
+    if(not check_sets_intersection_is_null(non_terminals, productions, terminals)):
+      return False
+  
+  return True
 
 
 print_menu()
@@ -174,29 +211,7 @@ for non_terminal in non_terminals:
   print('FOLLOW', non_terminal , generate_follow_set(non_terminal, rules, 0, []))
   print("\n")
 
-
-# print('\nFOLLOW: ')
-
-# print(generate_follow_set('E', rules, 0, []))
-# print(generate_follow_set('EPrime', rules, 0, []))
-# print(generate_follow_set('T', rules, 0, []))
-# print(generate_follow_set('TPrime', rules, 0, []))
-# print(generate_follow_set('F', rules, 0, []))
-
-# print(generate_follow_set('E', rules, 0, []))
-# print(generate_follow_set('T', rules, 0, []))
-# print(generate_follow_set('F', rules, 0, []))
-
-
-# print(generate_follow_set('A', rules, 0, []))
-# print(generate_follow_set('B', rules, 0, []))
-# print(generate_follow_set('C', rules, 0, []))
-# print(generate_follow_set('D', rules, 0, []))
-
-# print(generate_follow_set('bexpr', rules, 0, []))
-# print(generate_follow_set('bterm', rules, 0, []))
-# print(generate_follow_set('bfactor', rules, 0, []))
-
-# print(generate_follow_set('S', rules, 0, []))
-# print(generate_follow_set('A', rules, 0, []))
-# print(generate_follow_set('APrime', rules, 0, []))
+filtered_non_terminals = filter_non_terminals(non_terminals, rules)
+print(len(filtered_non_terminals))
+print('LL1?')
+print('Yes') if check_ll1(rules, filtered_non_terminals, terminals) else print('No')
