@@ -26,12 +26,18 @@ from turtle import left, right
 
 
 def print_menu():
+  """
+  This function prints the menu to select the file
+  """
   print('Ingresa el nombre del archivo que contiene el input:')
   print("['input1.txt', 'input2.txt', 'input3.txt', 'input4.txt', 'input5.txt']")
 
 
 # function to read files
 def read_file():
+  """
+  This function reads the test case file according to the name specified
+  """
   file_name = input()
   input_file = open('test_cases/' + file_name, 'r')
   return input_file.readlines()
@@ -39,6 +45,7 @@ def read_file():
   
 # read non-terminals
 def read_non_terminals(lines):
+  """This function determines the non-terminals symbols of the grammar"""
   non_terminals = []
   for index, line in enumerate(lines):
     if (index!= 0):
@@ -48,6 +55,7 @@ def read_non_terminals(lines):
 
 # read terminals
 def read_terminals(lines, non_terminals_set):
+  """This function determines the terminals symbols of the grammar"""
   terminals = []
   for index, line in enumerate(lines):
     if (index != 0):
@@ -62,6 +70,7 @@ def read_terminals(lines, non_terminals_set):
 
 # read grammar rules and replace epsilon ocurrences
 def read_rules(lines):
+  """This function reads the lines from the file and store the information as an array of objects"""
   lines_formatted = []
   for index, line in enumerate(lines):
     if (index != 0):
@@ -76,6 +85,7 @@ def read_rules(lines):
 
 # generate FIRST Set
 def generate_first_set(non_terminal, productions, terminals, counter, first):
+  """This function generates the FIRST set for a non_terminal"""
   # print(len(productions))
   if (counter > len(productions)-1):
     # print(first)
@@ -94,6 +104,7 @@ def generate_first_set(non_terminal, productions, terminals, counter, first):
 
 # generate FOLLOW Set
 def generate_follow_set(non_terminal, productions, counter, follow):
+  """This function generates the FOLLOW set for a non_terminal"""
   if (counter > (len(productions)-1)):
     # print('follow:', set(follow))
     return set(follow)
@@ -106,8 +117,6 @@ def generate_follow_set(non_terminal, productions, counter, follow):
     if (symbol == non_terminal):
       # check it has something in front
       if (index == right_side_size - 1 and non_terminal != productions[counter]['left_side']):
-        # print('no tiene algo enfrente', non_terminal)
-        # print(productions[counter]['left_side'])
         generate_follow_set(productions[counter]['left_side'], productions, 0, follow)
       elif ((index < right_side_size - 1)):
         if (right_side[index + 1] in terminals):
@@ -120,7 +129,6 @@ def generate_follow_set(non_terminal, productions, counter, follow):
           follow.extend(result)
           if ('epsilon' in result):
            follow.remove('epsilon')
-      #   # print('tiene un epsilon')
       #   # elimnar el que esta a la derecha
       #   # llamar el follow del que esta a index + 1
           if (index + 2 > right_side_size - 1):
@@ -132,6 +140,7 @@ def generate_follow_set(non_terminal, productions, counter, follow):
 
 # get terminals that have more than 1 production
 def filter_non_terminals(non_terminals, productions):
+  """This function gets the non-terminals with more than one production"""
   filtered = []
   counter = 0
   for non_terminal in non_terminals:
@@ -148,6 +157,7 @@ def filter_non_terminals(non_terminals, productions):
 
 # check if productions start width different symbol 
 def check_start_diff_symbol(non_terminal, productions, terminals):
+  """ This function checks if the start symbols are different for all rules of a non_terminal"""
   visited = set()
   counter = 0
   for index, production in enumerate(productions):
@@ -167,6 +177,7 @@ def check_start_diff_symbol(non_terminal, productions, terminals):
 
 # check each rule has at most one epsilon
 def check_at_most_one_epislon(non_terminal, productions):
+  """ This function checks if there's at most one epislon"""
   counter = 0
   for production in productions:
     left_side = production['left_side']
@@ -178,6 +189,7 @@ def check_at_most_one_epislon(non_terminal, productions):
 
 # check that intersection of FIRST and FOLLOW set is null
 def check_sets_intersection_is_null(non_terminal, productions, terminals):
+  """ This function checks if the first and follow intersection is null"""
   first = generate_first_set(non_terminal, productions, terminals, 0, [])
   follow = generate_follow_set(non_terminal, productions, 0, [])
   for element in first:
@@ -187,6 +199,7 @@ def check_sets_intersection_is_null(non_terminal, productions, terminals):
 
 # check if three rules are met
 def check_ll1(productions, non_terminals, terminals):
+  """ This function checks if the grammar is LL(1) based on the 3 rules required"""
   for non_terminal in non_terminals:
     if(not check_start_diff_symbol(non_terminal, productions, terminals)):
       return False
