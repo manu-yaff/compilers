@@ -198,8 +198,7 @@ def check_ll1(productions, non_terminals, terminals):
       return False
   
   return True
-
-
+  
 print_menu()
 lines = read_file()
 rules = read_rules(lines)
@@ -207,11 +206,11 @@ non_terminals = read_non_terminals(lines)
 terminals = read_terminals(lines, non_terminals)
 
 for non_terminal in non_terminals:
-  print('FIRST:', non_terminal, generate_first_set(non_terminal, rules, terminals, 0, []))
-  print('FOLLOW', non_terminal , generate_follow_set(non_terminal, rules, 0, []))
-  print("\n")
+  print(non_terminal, end=" => ")
+  print('FIRST =', generate_first_set(non_terminal, rules, terminals, 0, []), end=",")
+  print(" FOLLOW = ", end="")
+  print(generate_follow_set(non_terminal, rules, 0, []))
 
 filtered_non_terminals = filter_non_terminals(non_terminals, rules)
-print(len(filtered_non_terminals))
-print('LL1?')
+print('LL(1)?', end=" ")
 print('Yes') if check_ll1(rules, filtered_non_terminals, terminals) else print('No')
