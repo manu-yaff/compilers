@@ -29,7 +29,6 @@ def read_non_terminals(lines):
             non_terminals.append(terminal)
     return set(non_terminals)
 
-# read terminals
 def read_terminals(lines, non_terminals_set):
     """This function determines the terminals symbols of the grammar"""
     terminals = []
@@ -140,7 +139,7 @@ def format_table(table, terminals):
         html_table += row
         break
     html_table += '</table>'
-    print(row)
+    # print(row)
     return html_table
 
 def write_file(content):
@@ -184,4 +183,19 @@ def generate_parsing_table(terminals, non_terminals, rules):
     return table
 
 
+# print_menu()
+# lines = read_file()
+# rules = read_rules(lines)
+# non_terminals = read_non_terminals(lines)
+# terminals = read_terminals(lines, non_terminals)
+# table = generate_parsing_table(terminals, non_terminals, rules)
+# print(table)
+# for non_terminal in non_terminals:
+#   print(non_terminal, end=" => ")
+#   print('FIRST =', generate_first_set(non_terminal, rules, terminals, 0, []), end=",")
+#   print(" FOLLOW = ", end="")
+#   print(generate_follow_set(non_terminal, rules, 0, []))
 
+# filtered_non_terminals = filter_non_terminals(non_terminals, rules)
+# print('LL(1)?', end=" ")
+# print('Yes') if check_ll1(rules, filtered_non_terminals, terminals) else print('No')
