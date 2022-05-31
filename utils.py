@@ -30,8 +30,6 @@ def read_non_terminals(lines):
     return set(non_terminals)
 
 # read terminals
-
-
 def read_terminals(lines, non_terminals_set):
     """This function determines the terminals symbols of the grammar"""
     terminals = []
@@ -48,8 +46,6 @@ def read_terminals(lines, non_terminals_set):
     return set(terminals)
 
 # read grammar rules and replace epsilon ocurrences
-
-
 def read_rules(lines):
     """This function reads the lines from the file and store the information as an array of objects"""
     lines_formatted = []
@@ -121,99 +117,71 @@ def generate_follow_set(non_terminal, productions, counter, follow, terminals):
             # return generate_follow_set(non_terminal, productions, counter + 1, follow)
     return generate_follow_set(non_terminal, productions, counter + 1, follow, terminals)
 
+def fill_table_row(non_terminal, rule, cols, table):
+    formatted_rule = rule['left_side'] + ' -> ' + ' '.join(rule['right_side'])
+    for col in cols:
+        table[non_terminal][col] = formatted_rule
 
-# get terminals that have more than 1 production
-def filter_non_terminals(non_terminals, productions):
-    """This function gets the non-terminals with more than one production"""
-    filtered = []
-    counter = 0
+def format_table(table, terminals):
+    html_table = '<table>\n'
+    row = "<tr><td style='border: 1px solid black'>blanco</td>\n"
+    for terminal in terminals:
+        row += f"<td style='border: 1px solid black'>{terminal}</td>\n"
+    row += '</tr>\n'
+    html_table += row
+    row = ''
+
+    for non_terminal in table:
+        row += f"<tr>\n<td style='border: 1px solid black'>{non_terminal}</td>\n"
+        for terminal in table[non_terminal]:
+            rule = table[non_terminal][terminal]
+            row += f"<td style='border: 1px solid black'>{rule}</td>\n"
+        row += f"</tr>\n"
+        html_table += row
+        break
+    html_table += '</table>'
+    print(row)
+    return html_table
+
+def write_file(content):
+    f = open("output.html", "w")
+    f.write(content)
+    f.close()
+
+def generate_parsing_table(terminals, non_terminals, rules):
+    table = {}
+    temp = {}
     for non_terminal in non_terminals:
-        for production in productions:
-            left_side = production['left_side']
-            right_side = production['right_side']
-            if (left_side == non_terminal):
-                counter += 1
-                if (counter > 1):
-                    filtered.append(non_terminal)
-        counter = 0
-    return set(filtered)
+        for terminal in terminals:
+            if terminal != 'epsilon':
+                temp[terminal] = ''
+        temp['$'] = ''
+        temp = {}
+        table[non_terminal] = temp
+
+    for rule in rules:
+        non_terminal = rule['left_side']
+        first_set = generate_first_set(non_terminal, rules, terminals, 0, [])
+        if ('epsilon' in first_set):
+            first_set.remove('epsilon')
+            epsilon_rule = { "left_side": non_terminal, "right_side": 'epsilon' }
+            follow_set = generate_follow_set(non_terminal, rules, 0, [], terminals)
+            if (rule['right_side'][0] == 'epsilon'):
+                fill_table_row(non_terminal, epsilon_rule, follow_set, table)
+            else:
+                fill_table_row(non_terminal, rule, first_set, table)
+        else:
+            if(rule['right_side'][0] in terminals):
+                # print('aqui: ', rule['right_side'])
+                if(len(rule['right_side']) > 1):
+                    new_rule = rule['right_side'][0]
+                else:
+                    new_rule = rule['right_side']
+                fill_table_row(non_terminal, rule, set(new_rule), table)
+            else:
+                fill_table_row(non_terminal, rule, first_set, table)
+
+    return table
 
 
-# check if productions start width different symbol
-def check_start_diff_symbol(non_terminal, productions, terminals):
-    """ This function checks if the start symbols are different for all rules of a non_terminal"""
-    visited = set()
-    counter = 0
-    for index, production in enumerate(productions):
-        left_side = production['left_side']
-        right_side = production['right_side']
-        if (left_side == non_terminal):
-            counter += 1
-            if (right_side[0] in visited):
-                return False
-            visited.add(right_side[0])
 
-        if (right_side[0] == left_side):
-            return False
-        if(index == 0 and right_side[0] == productions[index + 2]['left_side']):
-            return False
-    return True
-
-# check each rule has at most one epsilon
-
-
-def check_at_most_one_epislon(non_terminal, productions):
-    """ This function checks if there's at most one epislon"""
-    counter = 0
-    for production in productions:
-        left_side = production['left_side']
-        right_side = production['right_side']
-        if (left_side == non_terminal):
-            if(right_side[0] == 'epsilon'):
-                counter += 1
-    return counter <= 1
-
-# check that intersection of FIRST and FOLLOW set is null
-
-
-def check_sets_intersection_is_null(non_terminal, productions, terminals):
-    """ This function checks if the first and follow intersection is null"""
-    first = generate_first_set(non_terminal, productions, terminals, 0, [])
-    follow = generate_follow_set(non_terminal, productions, 0, [])
-    for element in first:
-        if (element in follow):
-            return False
-    return True
-
-# check if three rules are met
-
-
-def check_ll1(productions, non_terminals, terminals):
-    """ This function checks if the grammar is LL(1) based on the 3 rules required"""
-    for non_terminal in non_terminals:
-        if(not check_start_diff_symbol(non_terminal, productions, terminals)):
-            return False
-
-        if(not check_at_most_one_epislon(non_terminal, productions)):
-            return False
-
-        if(not check_sets_intersection_is_null(non_terminals, productions, terminals)):
-            return False
-
-    return True
-
-# print_menu()
-# lines = read_file()
-# rules = read_rules(lines)
-# non_terminals = read_non_terminals(lines)
-# terminals = read_terminals(lines, non_terminals)
-
-# for non_terminal in non_terminals:
-#   print(non_terminal, end=" => ")
-#   print('FIRST =', generate_first_set(non_terminal, rules, terminals, 0, []), end=",")
-#   print(" FOLLOW = ", end="")
-#   print(generate_follow_set(non_terminal, rules, 0, []))
-
-# filtered_non_terminals = filter_non_terminals(non_terminals, rules)
-# print('LL(1)?', end=" ")
-# print('Yes') if check_ll1(rules, filtered_non_terminals, terminals) else print('No')
