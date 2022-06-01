@@ -122,14 +122,18 @@ def fill_table_row(non_terminal, rule, cols, table):
         table[non_terminal][col] = formatted_rule
 
 def format_table(table, terminals):
+    html_table = '<table>\n'
+    row = ""
     for index, non_terminal in enumerate(table):
-        row = "<tr>\n"
+        row += "<tr>\n"
         for terminal in table[non_terminal]:
-            row += f"\t<td>{table[non_terminal][terminal]}</td>\n"
+            row += f"\t<td style='border: 1px solid black'>{table[non_terminal][terminal]}</td>\n"
             # print(table[non_terminal][terminal], end = "|")
         row += "</tr>\n"
-        print('\n', row)
-        row = ""
+    html_table += row
+    html_table += '\n</table>'
+    # print(html_table)
+    return html_table
 
 
 def write_file(content):
@@ -140,23 +144,13 @@ def write_file(content):
 def generate_parsing_table(terminals, non_terminals, rules):
     table = {}
     temp = {}
-    counter = 0
-    print(non_terminals)
     for non_terminal in non_terminals:
         for terminal in terminals:
             if terminal != 'epsilon':
                 temp[terminal] = 'x'
-            counter += 1
         temp['$'] = 'x'
         table[non_terminal] = temp
         temp = {}
-
-    counter = 0
-    for item in table:
-        for x in table[item]:
-            counter += 1
-            print(f"{counter} - table[{item}][{x}] = {table[item][x]}")
-    print('--------------------')
 
     for rule in rules:
         non_terminal = rule['left_side']
@@ -180,11 +174,6 @@ def generate_parsing_table(terminals, non_terminals, rules):
             else:
                 fill_table_row(non_terminal, rule, first_set, table)
 
-    counter = 0
-    for item in table:
-        for x in table[item]:
-            counter += 1
-            print(f"{counter} - table[{item}][{x}] = {table[item][x]}")
     return table
 
 
