@@ -164,7 +164,7 @@ def generate_parsing_table(terminals, non_terminals, rules):
         first_set = generate_first_set(non_terminal, rules, terminals, 0, [])
         if ('epsilon' in first_set):
             first_set.remove('epsilon')
-            epsilon_rule = { "left_side": non_terminal, "right_side": 'epsilon' }
+            epsilon_rule = { "left_side": non_terminal, "right_side": "x" }
             follow_set = generate_follow_set(non_terminal, rules, 0, [], terminals)
             if (rule['right_side'][0] == 'epsilon'):
                 fill_table_row(non_terminal, epsilon_rule, follow_set, table)
@@ -183,20 +183,45 @@ def generate_parsing_table(terminals, non_terminals, rules):
 
     return table
 
+def process_string(string, parsing_table, first_rule, terminals):
+    # stack = ['$', first_rule['left_side']]
+    stack = ['$', 'E']
+    current_input = string.split()
+    current_input.append('$')
+    counter = 0
+    while len(current_input) > 0:
+        stack_length = len(stack)
+        counter += 1
+        stack_top = stack[stack_length - 1]
+        if (stack_top == current_input[0]):
+            current_input.pop(0)
+            stack.pop()
+        elif (stack_top in terminals and current_input[0] in terminals):
+            return False
+        else:
+            stack.pop()
+            if (stack_top != 'x'):
+                print('this is the last output', parsing_table[stack_top][current_input[0]])
+                output = parsing_table[stack_top][current_input[0]].split('->')[1].strip().split()
+                if (output == 'x'):
+                    stack.pop()
+                else:
+                    output.reverse()
+                    stack.extend(output)
 
-# print_menu()
-# lines = read_file()
-# rules = read_rules(lines)
-# non_terminals = read_non_terminals(lines)
-# terminals = read_terminals(lines, non_terminals)
-# table = generate_parsing_table(terminals, non_terminals, rules)
-# print(table)
-# for non_terminal in non_terminals:
-#   print(non_terminal, end=" => ")
-#   print('FIRST =', generate_first_set(non_terminal, rules, terminals, 0, []), end=",")
-#   print(" FOLLOW = ", end="")
-#   print(generate_follow_set(non_terminal, rules, 0, []))
+        print(stack, '->', current_input, '->', output)
 
-# filtered_non_terminals = filter_non_terminals(non_terminals, rules)
-# print('LL(1)?', end=" ")
-# print('Yes') if check_ll1(rules, filtered_non_terminals, terminals) else print('No')
+    if (len(stack) == 0 and len(current_input) == 0):
+        return True
+    else:
+        return False
+
+
+def evaluate_strings(strings, parsing_table, first_rule, terminals):
+    for string in strings:
+        result = process_string(string[:-1], parsing_table, first_rule, terminals)
+        print('-----------------------------------------')
+        print(result)
+
+
+
