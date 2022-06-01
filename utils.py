@@ -122,17 +122,24 @@ def fill_table_row(non_terminal, rule, cols, table):
         table[non_terminal][col] = formatted_rule
 
 def format_table(table, terminals):
-    html_table = '<table>\n'
-    row = ""
-    for index, non_terminal in enumerate(table):
-        row += "<tr>\n"
+    header = "<tr style='border: 1px solid black'>\n<td style='border: 1px solid black'></td>\n"
+    for non_terminal in table:
         for terminal in table[non_terminal]:
+            header += f"<td style='border: 1px solid black'>{terminal}</td>\n"
+        break
+    header += '</tr>\n'
+
+    html_table = '<table>\n' + header
+    row = ""
+    for non_terminal in table:
+        row += "<tr>\n"
+        for index, terminal in enumerate(table[non_terminal]):
+            if (index == 0):
+                row += f"\t<td style='border: 1px solid black'>{non_terminal}</td>\n"
             row += f"\t<td style='border: 1px solid black'>{table[non_terminal][terminal]}</td>\n"
-            # print(table[non_terminal][terminal], end = "|")
         row += "</tr>\n"
     html_table += row
     html_table += '\n</table>'
-    # print(html_table)
     return html_table
 
 
