@@ -19,11 +19,11 @@ def main():
 
 
     table = generate_parsing_table(terminals, non_terminals, rules)
-    for item in table:
-        for x in table[item]:
-            print(f"table[{item}][{x}] = {table[item][x]}")
-    formatted_table = format_table(table, terminals)
-    write_file(formatted_table)
+    # for item in table:
+    #     for x in table[item]:
+    #         print(f"table[{item}][{x}] = {table[item][x]}")
+    # formatted_table = format_table(table, terminals)
+    # write_file(formatted_table)
 
 
 
