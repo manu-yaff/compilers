@@ -164,7 +164,7 @@ def generate_parsing_table(terminals, non_terminals, rules):
         first_set = generate_first_set(non_terminal, rules, terminals, 0, [])
         if ('epsilon' in first_set):
             first_set.remove('epsilon')
-            epsilon_rule = { "left_side": non_terminal, "right_side": "x" }
+            epsilon_rule = { "left_side": non_terminal, "right_side": "0" }
             follow_set = generate_follow_set(non_terminal, rules, 0, [], terminals)
             if (rule['right_side'][0] == 'epsilon'):
                 fill_table_row(non_terminal, epsilon_rule, follow_set, table)
@@ -184,8 +184,7 @@ def generate_parsing_table(terminals, non_terminals, rules):
     return table
 
 def process_string(string, parsing_table, first_rule, terminals):
-    # stack = ['$', first_rule['left_side']]
-    stack = ['$', 'E']
+    stack = ['$', first_rule['left_side']]
     current_input = string.split()
     current_input.append('$')
     counter = 0
@@ -200,16 +199,27 @@ def process_string(string, parsing_table, first_rule, terminals):
             return False
         else:
             stack.pop()
-            if (stack_top != 'x'):
-                print('this is the last output', parsing_table[stack_top][current_input[0]])
-                output = parsing_table[stack_top][current_input[0]].split('->')[1].strip().split()
-                if (output == 'x'):
-                    stack.pop()
-                else:
+            # print(stack_top, current_input[0])
+            # print(parsing_table[stack_top][current_input[0]])
+            temp_output = parsing_table[stack_top][current_input[0]]
+            if (temp_output == 'x'):
+                return False
+            else:
+                if (temp_output.split('->')[1].strip() != '0'):
+                    output = parsing_table[stack_top][current_input[0]].split('->')[1].strip().split()
                     output.reverse()
                     stack.extend(output)
-
-        print(stack, '->', current_input, '->', output)
+                # print('this is the output', output)
+                # print('al stack', output)
+            # if (stack_top != 'x'):
+            #     print('this is the last output', parsing_table[stack_top][current_input[0]])
+            #     output = parsing_table[stack_top][current_input[0]].split('->')[1].strip().split()
+            #     if (output == 'x'):
+            #         stack.pop()
+            #     else:
+            #         output.reverse()
+            #         stack.extend(output)
+        # print(stack, '->', current_input, '->', output)
 
     if (len(stack) == 0 and len(current_input) == 0):
         return True
@@ -220,7 +230,6 @@ def process_string(string, parsing_table, first_rule, terminals):
 def evaluate_strings(strings, parsing_table, first_rule, terminals):
     for string in strings:
         result = process_string(string[:-1], parsing_table, first_rule, terminals)
-        print('-----------------------------------------')
         print(result)
 
 
