@@ -25,3 +25,5 @@
 4. The program would automatically run. Then, just type the name of input file and hit enter
 
 5. Open the _output.html_ file to see the result
+
+6. To run the program again, execute _python3 main.py__
