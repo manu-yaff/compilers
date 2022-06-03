@@ -23,3 +23,5 @@
 - Enter the password your computer password
 
 4. The program would automatically run. Then, just type the name of input file and hit enter
+
+5. Open the _output.html_ file to see the result
