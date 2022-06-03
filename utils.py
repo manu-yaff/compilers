@@ -113,7 +113,7 @@ def generate_follow_set(non_terminal, productions, counter, follow, terminals):
 def fill_table_row(non_terminal, rule, cols, table):
     formatted_rule = rule['left_side'] + ' -> ' + ' '.join(rule['right_side'])
     for col in cols:
-        if (table[non_terminal][col] and table[non_terminal][col] != 'x'):
+        if (table[non_terminal][col] and table[non_terminal][col] != ' '):
             return False
         table[non_terminal][col] = formatted_rule
     return True
@@ -126,7 +126,7 @@ def format_table(table, terminals):
         break
     header += '</tr>\n'
 
-    html_table = '<table>\n' + header
+    html_table = '<meta charset="UTF-8"/><table>\n' + header
     row = ""
     for non_terminal in table:
         row += "<tr>\n"
@@ -154,8 +154,8 @@ def generate_parsing_table(terminals, non_terminals, rules):
     for non_terminal in non_terminals:
         for terminal in terminals:
             if terminal != 'epsilon':
-                temp[terminal] = 'x'
-        temp['$'] = 'x'
+                temp[terminal] = ' '
+        temp['$'] = ' '
         table[non_terminal] = temp
         temp = {}
 
@@ -164,7 +164,7 @@ def generate_parsing_table(terminals, non_terminals, rules):
         first_set = generate_first_set(non_terminal, rules, terminals, 0, [])
         if ('epsilon' in first_set):
             first_set.remove('epsilon')
-            epsilon_rule = { "left_side": non_terminal, "right_side": "0" }
+            epsilon_rule = { "left_side": non_terminal, "right_side": 'ε' }
             follow_set = generate_follow_set(non_terminal, rules, 0, [], terminals)
             if (rule['right_side'][0] == 'epsilon'):
                 result = fill_table_row(non_terminal, epsilon_rule, follow_set, table)
@@ -205,10 +205,10 @@ def process_string(string, parsing_table, first_rule, terminals):
                 return False
 
             temp_output = parsing_table[stack_top][current_input[0]]
-            if (temp_output == 'x'):
+            if (temp_output == ' '):
                 return False
             else:
-                if (temp_output.split('->')[1].strip() != '0'):
+                if (temp_output.split('->')[1].strip() != 'ε'):
                     output = parsing_table[stack_top][current_input[0]].split('->')[1].strip().split()
                     output.reverse()
                     stack.extend(output)
