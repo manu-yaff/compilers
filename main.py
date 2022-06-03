@@ -3,7 +3,23 @@ Program that takes a grammar as input and produce the terminal and non terminal
 symbols
 
 Input example:
+8 3
+E -> T EPrime
+EPrime -> + T EPrime
+EPrime -> ' '
+T -> F TPrime
+TPrime -> * F TPrime
+TPrime -> ' '
+F -> ( E )
+F -> id
+id + id * id
+id * id + ( id * id + id )
+id +
 Output example:
+
+- Parsing table
+- YES if string is accepted
+- NO if string is accepted
 
 
 Author: Manuel Yafté

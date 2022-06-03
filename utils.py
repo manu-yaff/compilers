@@ -11,9 +11,9 @@ def print_menu():
 def read_file():
     """
     This function reads the test case file according to the name specified
+
+    :return: the lines read from the file
     """
-    # file_name = input()
-    # input_file = open('test_cases/' + file_name, 'r')
     file_name = input()
     input_file = open('test_cases/' + file_name, 'r')
     return input_file.readlines()
@@ -21,7 +21,12 @@ def read_file():
 
 # read non-terminals
 def read_non_terminals(lines):
-    """This function determines the non-terminals symbols of the grammar"""
+    """
+    This function determines the non-terminals symbols of the grammar
+
+    :param lines: lines read from the file, each array element is a line
+    :return: set with the non-terminals symbols
+    """
     non_terminals = []
     rules_number = int(lines[0][0]) + 1
     for index, line in enumerate(lines):
@@ -31,7 +36,13 @@ def read_non_terminals(lines):
     return set(non_terminals)
 
 def read_terminals(lines, non_terminals_set):
-    """This function determines the terminals symbols of the grammar"""
+    """
+    This function determines the terminals symbols of the grammar
+
+    :param lines: lines read from the file, each array element is a line
+    :param non_terminals_set: set with the non-terminals symbols
+    :return: set with the terminals symbols
+    """
     terminals = []
     rules_number = int(lines[0][0]) + 1
     for index, line in enumerate(lines):
@@ -47,7 +58,12 @@ def read_terminals(lines, non_terminals_set):
 
 # read grammar rules and replace epsilon ocurrences
 def read_rules(lines):
-    """This function reads the lines from the file and store the information as an array of objects"""
+    """
+    This function reads the lines from the file and store the information as an array of objects
+
+    :param lines: lines read from the file, each array element is a line
+    :return: array of objects representing the rules
+    """
     lines_formatted = []
     rules_number = int(lines[0][0]) + 1
     for index, line in enumerate(lines):
@@ -62,7 +78,16 @@ def read_rules(lines):
 
 # generate FIRST Set
 def generate_first_set(non_terminal, productions, terminals, counter, first):
-    """This function generates the FIRST set for a non_terminal"""
+    """
+    This function generates the FIRST set for a non_terminal
+
+    :param non_terminal: non-terminal symbol whose first set would be generated
+    :param productions: all the grammar rules
+    :param terminals: terminal symbols
+    :param counter: counts the number of productions processed
+    :param first: stores the result set
+    :return: first set for the given symbol
+    """
     if (counter > len(productions)-1):
         return set(first)
 
@@ -78,7 +103,16 @@ def generate_first_set(non_terminal, productions, terminals, counter, first):
 
 # generate FOLLOW Set
 def generate_follow_set(non_terminal, productions, counter, follow, terminals):
-    """This function generates the FOLLOW set for a non_terminal"""
+    """
+    This function generates the FOLLOW set for a non_terminal
+
+    :param non_terminal: non-terminal symbol whose first set would be generated
+    :param productions: all the grammar rules
+    :param counter: counts the number of productions processed
+    :param follow: stores the result set
+    :param terminals: terminal symbols
+    :return: follow set for the given symbol
+    """
     if (counter > (len(productions)-1)):
         return set(follow)
 
@@ -106,11 +140,18 @@ def generate_follow_set(non_terminal, productions, counter, follow, terminals):
                     if (index + 2 > right_side_size - 1):
                         generate_follow_set(
                             productions[counter]['left_side'], productions, 0, follow, terminals)
-        # else:
-            # return generate_follow_set(non_terminal, productions, counter + 1, follow)
     return generate_follow_set(non_terminal, productions, counter + 1, follow, terminals)
 
 def fill_table_row(non_terminal, rule, cols, table):
+    """
+    This function fills the parsing table
+
+    :param non_terminal: non-terminal used to identified the row
+    :param rule: production to be saved in the table
+    :param cols: columns where the rule is stored
+    :param table: parsing table object
+    :return: False in case there is a conflict (not LL1 grammar), True if everythinh ok
+    """
     formatted_rule = rule['left_side'] + ' -> ' + ' '.join(rule['right_side'])
     for col in cols:
         if (table[non_terminal][col] and table[non_terminal][col] != ' '):
@@ -119,6 +160,13 @@ def fill_table_row(non_terminal, rule, cols, table):
     return True
 
 def format_table(table, terminals):
+    """
+    This function creates the html table
+
+    :param table: parsing table in object form
+    :return: parsing table in html format
+    """
+
     header = "<tr style='border: 1px solid black'>\n<td style='border: 1px solid black; padding: 10px'></td>\n"
     for non_terminal in table:
         for terminal in table[non_terminal]:
@@ -141,6 +189,12 @@ def format_table(table, terminals):
 
 
 def write_file(content, append):
+    """
+    This function writes content in a file
+
+    :param content: content to be written in the file
+    :param append: specified whether the content should be append to the file or be overwritten
+    """
     if (append):
         f = open("output.html", "a")
     else:
@@ -149,6 +203,14 @@ def write_file(content, append):
     f.close()
 
 def generate_parsing_table(terminals, non_terminals, rules):
+    """
+    This function generates the parsing table in an object form
+
+    :param terminals: terminal symbols
+    :param non_terminals: non-terminals symbols
+    :param rules: grammar productions
+    :return: object parsing table
+    """
     table = {}
     temp = {}
     for non_terminal in non_terminals:
@@ -186,6 +248,16 @@ def generate_parsing_table(terminals, non_terminals, rules):
     return table
 
 def process_string(string, parsing_table, first_rule, terminals):
+    """
+    This function evaluates if the string is accepted by the grammar
+
+    :param string: string to be evaluated
+    :param parsing_table: parsing table object
+    :param first_rule: the first production in the grammar
+    :param terminals: terminal symbols
+
+    :return: True if the string is accepted, False if not
+    """
     stack = ['$', first_rule['left_side']]
     current_input = string.split()
     current_input.append('$')
@@ -220,6 +292,16 @@ def process_string(string, parsing_table, first_rule, terminals):
 
 
 def evaluate_strings(strings, parsing_table, first_rule, terminals):
+    """
+    This function evaluates if a set of strings is accepted by the grammar
+
+    :param string: string to be evaluated
+    :param parsing_table: parsing table object
+    :param first_rule: the first production in the grammar
+    :param terminals: terminal symbols
+
+    :return: string containing all the strings with their acceptance result
+    """
     html_strings_output = '<br />'
     for string in strings:
         result = process_string(string[:-1], parsing_table, first_rule, terminals)

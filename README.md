@@ -10,7 +10,7 @@
 
 - You should see:
   - test_cases/
-  - lexer.py
+  - main.py
   - README.md
   - setup.sh
 
