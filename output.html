@@ -1,35 +1,57 @@
 <table>
 <tr style='border: 1px solid black'>
-<td style='border: 1px solid black'></td>
-<td style='border: 1px solid black'>)</td>
-<td style='border: 1px solid black'>(</td>
-<td style='border: 1px solid black'>b</td>
-<td style='border: 1px solid black'>a</td>
-<td style='border: 1px solid black'>$</td>
+<td style='border: 1px solid black; padding: 10px'></td>
+<td style='border: 1px solid black; padding: 10px'>*</td>
+<td style='border: 1px solid black; padding: 10px'>id</td>
+<td style='border: 1px solid black; padding: 10px'>+</td>
+<td style='border: 1px solid black; padding: 10px'>(</td>
+<td style='border: 1px solid black; padding: 10px'>)</td>
+<td style='border: 1px solid black; padding: 10px'>$</td>
 </tr>
 <tr>
-	<td style='border: 1px solid black'>goal</td>
-	<td style='border: 1px solid black'>x</td>
-	<td style='border: 1px solid black'>goal -> A</td>
-	<td style='border: 1px solid black'>goal -> A</td>
-	<td style='border: 1px solid black'>goal -> A</td>
-	<td style='border: 1px solid black'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>T</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>T -> F TPrime</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>T -> F TPrime</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
 </tr>
 <tr>
-	<td style='border: 1px solid black'>A</td>
-	<td style='border: 1px solid black'>x</td>
-	<td style='border: 1px solid black'>A -> ( A )</td>
-	<td style='border: 1px solid black'>A -> two</td>
-	<td style='border: 1px solid black'>A -> two</td>
-	<td style='border: 1px solid black'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>E</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>E -> T EPrime</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>E -> T EPrime</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
 </tr>
 <tr>
-	<td style='border: 1px solid black'>two</td>
-	<td style='border: 1px solid black'>x</td>
-	<td style='border: 1px solid black'>x</td>
-	<td style='border: 1px solid black'>two -> b</td>
-	<td style='border: 1px solid black'>two -> a</td>
-	<td style='border: 1px solid black'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>EPrime</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>EPrime -> + T EPrime</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>EPrime -> 0</td>
+	<td style='border: 1px solid black; padding: 10px'>EPrime -> 0</td>
+</tr>
+<tr>
+	<td style='border: 1px solid black; padding: 10px'>TPrime</td>
+	<td style='border: 1px solid black; padding: 10px'>TPrime -> * F TPrime</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>TPrime -> 0</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>TPrime -> 0</td>
+	<td style='border: 1px solid black; padding: 10px'>TPrime -> 0</td>
+</tr>
+<tr>
+	<td style='border: 1px solid black; padding: 10px'>F</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>F -> id</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>F -> ( E )</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
+	<td style='border: 1px solid black; padding: 10px'>x</td>
 </tr>
 
-</table><div>( ( a ) ) - ACCEPTED? YES</div><div>( a ) ) - ACCEPTED? NO</div><div>( ( ( ( ( b ) ) ) ) ) - ACCEPTED? YES</div><div>( ( ( ( ( a b ) ) ) ) ) - ACCEPTED? NO</div>
+</table><br /><div>id + id * id - ACCEPTED? YES</div><div>id * id + ( id * id + id ) - ACCEPTED? YES</div><div>id + - ACCEPTED? NO</div>

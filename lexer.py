@@ -19,7 +19,6 @@ def main():
 
 
     table = generate_parsing_table(terminals, non_terminals, rules)
-    # print(table)
     if (not table):
         write_file('<div>Grammar is not LL(1)!</div>', append=False)
     else:

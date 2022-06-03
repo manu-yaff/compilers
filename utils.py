@@ -63,14 +63,11 @@ def read_rules(lines):
 # generate FIRST Set
 def generate_first_set(non_terminal, productions, terminals, counter, first):
     """This function generates the FIRST set for a non_terminal"""
-    # print(len(productions))
     if (counter > len(productions)-1):
-        # print(first)
         return set(first)
 
     if (productions[counter]['left_side'] == non_terminal):
         if (productions[counter]['right_side'][0] in terminals):
-            # print('es un terminal')
             first.append(productions[counter]['right_side'][0])
             return generate_first_set(non_terminal, productions, terminals, counter + 1, first)
         else:
@@ -83,7 +80,6 @@ def generate_first_set(non_terminal, productions, terminals, counter, first):
 def generate_follow_set(non_terminal, productions, counter, follow, terminals):
     """This function generates the FOLLOW set for a non_terminal"""
     if (counter > (len(productions)-1)):
-        # print('follow:', set(follow))
         return set(follow)
 
     right_side = productions[counter]['right_side']
@@ -98,13 +94,10 @@ def generate_follow_set(non_terminal, productions, counter, follow, terminals):
                     productions[counter]['left_side'], productions, 0, follow, terminals)
             elif ((index < right_side_size - 1)):
                 if (right_side[index + 1] in terminals):
-                    # print('terminal al frente', right_side[index+1])
                     follow.append(right_side[index+1])
                 else:
-                    # print('tiene el siguiente no terminal', right_side[index+1])
                     result = generate_first_set(
                         right_side[index+1], productions, terminals, 0, [])
-                    # print('this is result: ',result)
                     follow.extend(result)
                     if ('epsilon' in result):
                         follow.remove('epsilon')
@@ -118,22 +111,18 @@ def generate_follow_set(non_terminal, productions, counter, follow, terminals):
     return generate_follow_set(non_terminal, productions, counter + 1, follow, terminals)
 
 def fill_table_row(non_terminal, rule, cols, table):
-    # print(non_terminal, rule, cols)
-    # print('\n')
     formatted_rule = rule['left_side'] + ' -> ' + ' '.join(rule['right_side'])
     for col in cols:
         if (table[non_terminal][col] and table[non_terminal][col] != 'x'):
             return False
-        #     print('esto es lo que habia', table[non_terminal][col])
-        #     print('esto es lo que se quiere meter', formatted_rule)
         table[non_terminal][col] = formatted_rule
     return True
 
 def format_table(table, terminals):
-    header = "<tr style='border: 1px solid black'>\n<td style='border: 1px solid black'></td>\n"
+    header = "<tr style='border: 1px solid black'>\n<td style='border: 1px solid black; padding: 10px'></td>\n"
     for non_terminal in table:
         for terminal in table[non_terminal]:
-            header += f"<td style='border: 1px solid black'>{terminal}</td>\n"
+            header += f"<td style='border: 1px solid black; padding: 10px'>{terminal}</td>\n"
         break
     header += '</tr>\n'
 
@@ -143,8 +132,8 @@ def format_table(table, terminals):
         row += "<tr>\n"
         for index, terminal in enumerate(table[non_terminal]):
             if (index == 0):
-                row += f"\t<td style='border: 1px solid black'>{non_terminal}</td>\n"
-            row += f"\t<td style='border: 1px solid black'>{table[non_terminal][terminal]}</td>\n"
+                row += f"\t<td style='border: 1px solid black; padding: 10px'>{non_terminal}</td>\n"
+            row += f"\t<td style='border: 1px solid black; padding: 10px'>{table[non_terminal][terminal]}</td>\n"
         row += "</tr>\n"
     html_table += row
     html_table += '\n</table>'
@@ -169,15 +158,10 @@ def generate_parsing_table(terminals, non_terminals, rules):
         temp['$'] = 'x'
         table[non_terminal] = temp
         temp = {}
-    # print(table)
 
     for rule in rules:
         non_terminal = rule['left_side']
         first_set = generate_first_set(non_terminal, rules, terminals, 0, [])
-        # print('non terminal ', non_terminal)
-        # print('first_set: ', first_set)
-        # print('\n')
-        # print('------')
         if ('epsilon' in first_set):
             first_set.remove('epsilon')
             epsilon_rule = { "left_side": non_terminal, "right_side": "0" }
@@ -192,30 +176,17 @@ def generate_parsing_table(terminals, non_terminals, rules):
                     new_rule = rule['right_side'][0]
                 else:
                     new_rule = rule['right_side']
-                # print('non terminal ', non_terminal)
-                # print('first_set: ', first_set)
-                # print('new rule: ',set(new_rule))
-                # print(rule, new_rule)
-                # print('\n')
                 result = fill_table_row(non_terminal, rule, set(new_rule), table)
             else:
                 first_set = generate_first_set(rule['right_side'][0], rules, terminals, 0, [])
-                # print(rule, first_set)
-                # print('\n')
-                # print('non terminal ', non_terminal)
-                # print('first_set: ', first_set)
-                # print('\n')
-                # print(non_terminal, rule, first_set)
                 result = fill_table_row(non_terminal, rule, first_set, table)
 
         if (not result):
             return False
-    # print('tableee:', table['$'])
     return table
 
 def process_string(string, parsing_table, first_rule, terminals):
     stack = ['$', first_rule['left_side']]
-    # print('first rule',)
     current_input = string.split()
     current_input.append('$')
     counter = 0
@@ -230,9 +201,6 @@ def process_string(string, parsing_table, first_rule, terminals):
             return False
         else:
             stack.pop()
-            # print(stack_top, current_input[0])
-            # print(parsing_table[stack_top][current_input[0]])
-            # print('here: ', parsing_table['$'])
             if (stack_top == '$'):
                 return False
 
@@ -244,17 +212,6 @@ def process_string(string, parsing_table, first_rule, terminals):
                     output = parsing_table[stack_top][current_input[0]].split('->')[1].strip().split()
                     output.reverse()
                     stack.extend(output)
-                # print('this is the output', output)
-                # print('al stack', output)
-            # if (stack_top != 'x'):
-            #     print('this is the last output', parsing_table[stack_top][current_input[0]])
-            #     output = parsing_table[stack_top][current_input[0]].split('->')[1].strip().split()
-            #     if (output == 'x'):
-            #         stack.pop()
-            #     else:
-            #         output.reverse()
-            #         stack.extend(output)
-        # print(stack, '->', current_input, '->', output)
 
     if (len(stack) == 0 and len(current_input) == 0):
         return True
@@ -263,19 +220,15 @@ def process_string(string, parsing_table, first_rule, terminals):
 
 
 def evaluate_strings(strings, parsing_table, first_rule, terminals):
-    html_strings_output = ''
+    html_strings_output = '<br />'
     for string in strings:
         result = process_string(string[:-1], parsing_table, first_rule, terminals)
         if (result):
             html_strings_output += f"<div>{string[:-1]} - ACCEPTED? YES</div>"
-            # print(string[:-1], ' - ACCEPTED?', 'YES')
         else:
             html_strings_output += f"<div>{string[:-1]} - ACCEPTED? NO</div>"
-            # print(string[:-1], ' - ACCEPTED?', 'NO')
     return html_strings_output
 
-# def print_grammar_not_ll1():
-    # write_filez
 
 
 
