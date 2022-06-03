@@ -19,11 +19,18 @@ def main():
 
 
     table = generate_parsing_table(terminals, non_terminals, rules)
-    formatted_table = format_table(table, terminals)
-    write_file(formatted_table)
-    number_strings = int(lines[0].split()[0])
-    strings_to_read = lines[number_strings+1:]
-    evaluate_strings(strings_to_read, table, rules[0], terminals)
+    # print(table)
+    if (not table):
+        write_file('<div>Grammar is not LL(1)!</div>', append=False)
+    else:
+        formatted_table = format_table(table, terminals)
+        write_file(formatted_table, append=False)
+        number_strings = int(lines[0].split()[0])
+        strings_to_read = lines[number_strings+1:]
+        strings_result = evaluate_strings(strings_to_read, table, rules[0], terminals)
+        write_file(strings_result, append=True)
+
+    print('Archivo output.html generado')
 
 
 
